@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Text, Box, Sphere, Environment, Float, useTexture } from '@react-three/drei'
+import { OrbitControls, Text, Box, Sphere, Environment, Float } from '@react-three/drei'
 import * as THREE from 'three'
 
 interface CodeFaceProps {
@@ -250,13 +250,13 @@ const CodeFace: React.FC<CodeFaceProps> = ({ position, rotation, code, label, th
   )
 }
 
-const CodeSphere: React.FC<{ code: string; theme: Theme; materialType: string }> = ({ code, theme, materialType }) => {
+const CodeSphere: React.FC<{ code: string; theme: Theme; materialType: string; rotationSpeed: number }> = ({ code, theme, materialType, rotationSpeed }) => {
   const meshRef = useRef<THREE.Mesh>(null)
-  
-  useFrame((state) => {
+
+  useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += 0.005
-      meshRef.current.rotation.x += 0.002
+      meshRef.current.rotation.y += 0.005 * rotationSpeed
+      meshRef.current.rotation.x += 0.002 * rotationSpeed
     }
   })
 
@@ -306,13 +306,13 @@ const CodeSphere: React.FC<{ code: string; theme: Theme; materialType: string }>
   )
 }
 
-const CodeCube: React.FC<{ faceCodes: string[]; theme: Theme; materialType: string }> = ({ faceCodes, theme, materialType }) => {
+const CodeCube: React.FC<{ faceCodes: string[]; theme: Theme; materialType: string; rotationSpeed: number }> = ({ faceCodes, theme, materialType, rotationSpeed }) => {
   const groupRef = useRef<THREE.Group>(null)
-  
-  useFrame((state) => {
+
+  useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.x += 0.003
-      groupRef.current.rotation.y += 0.005
+      groupRef.current.rotation.x += 0.003 * rotationSpeed
+      groupRef.current.rotation.y += 0.005 * rotationSpeed
     }
   })
 
@@ -373,14 +373,18 @@ interface ThreeDVisualizationProps {
     wireframe: boolean
   }
   materialType: 'glass' | 'reflective' | 'matte' | 'glowing' | 'crystal' | 'metallic'
+  rotationSpeed: number
+  autoRotate: boolean
 }
 
-const ThreeDVisualization: React.FC<ThreeDVisualizationProps> = ({ 
-  codes, 
-  theme, 
-  shape, 
+const ThreeDVisualization: React.FC<ThreeDVisualizationProps> = ({
+  codes,
+  theme,
+  shape,
   effects,
-  materialType
+  materialType,
+  rotationSpeed,
+  autoRotate
 }) => {
   const { scene } = useThree()
   
@@ -407,21 +411,21 @@ const ThreeDVisualization: React.FC<ThreeDVisualizationProps> = ({
       <Environment preset="city" />
       
       {shape === 'cube' ? (
-        <CodeCube faceCodes={codes} theme={theme} materialType={materialType} />
+        <CodeCube faceCodes={codes} theme={theme} materialType={materialType} rotationSpeed={rotationSpeed} />
       ) : (
-        <CodeSphere code={codes.join('\n')} theme={theme} materialType={materialType} />
+        <CodeSphere code={codes.join('\n')} theme={theme} materialType={materialType} rotationSpeed={rotationSpeed} />
       )}
       
       {effects.particles && (
         <Particles color={theme.primary} />
       )}
       
-      <OrbitControls 
-        enablePan={true} 
-        enableZoom={true} 
+      <OrbitControls
+        enablePan={true}
+        enableZoom={true}
         enableRotate={true}
-        autoRotate={true}
-        autoRotateSpeed={0.5}
+        autoRotate={autoRotate}
+        autoRotateSpeed={rotationSpeed * 0.5}
         minDistance={3}
         maxDistance={15}
       />
@@ -493,6 +497,9 @@ interface CodeVisualizationProps {
     wireframe: boolean
   }
   materialType: 'glass' | 'reflective' | 'matte' | 'glowing' | 'crystal' | 'metallic'
+  rotationSpeed: number
+  autoRotate: boolean
+  showLogo: boolean
 }
 
 export const CodeVisualization: React.FC<CodeVisualizationProps> = ({
@@ -500,27 +507,41 @@ export const CodeVisualization: React.FC<CodeVisualizationProps> = ({
   currentTheme,
   shape,
   effects,
-  materialType
+  materialType,
+  rotationSpeed,
+  autoRotate,
+  showLogo
 }) => {
   const theme = themes[currentTheme]
 
   return (
-    <div className="w-full h-full">
+    <div
+      className="w-full h-full"
+      style={{
+        backgroundColor: theme.background,
+        backgroundImage: showLogo ? "url('/z-logo.svg')" : undefined,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '20%',
+      }}
+    >
       <Canvas
         camera={{ position: [0, 0, 8], fov: 60 }}
-        style={{ background: theme.background }}
-        gl={{ 
+        style={{ background: 'transparent' }}
+        gl={{
           antialias: true,
           alpha: true,
-          powerPreference: "high-performance"
+          powerPreference: "high-performance",
         }}
       >
-        <ThreeDVisualization 
-          codes={codes} 
-          theme={theme} 
-          shape={shape} 
+        <ThreeDVisualization
+          codes={codes}
+          theme={theme}
+          shape={shape}
           effects={effects}
           materialType={materialType}
+          rotationSpeed={rotationSpeed}
+          autoRotate={autoRotate}
         />
       </Canvas>
     </div>
