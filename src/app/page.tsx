@@ -17,8 +17,6 @@ const HomePage = () => {
     wireframe: false
   })
   const [rotationSpeed, setRotationSpeed] = useState(1)
-  const [autoRotate, setAutoRotate] = useState(true)
-  const [showLogo, setShowLogo] = useState(true)
   const [codes, setCodes] = useState<string[]>(['', '', '', '', '', ''])
   const [error, setError] = useState<string | null>(null)
   
@@ -159,10 +157,13 @@ const HomePage = () => {
               shape={shape}
               effects={effects}
               materialType={materialType}
-              rotationSpeed={rotationSpeed}
-              autoRotate={autoRotate}
-              showLogo={showLogo}
             />
+            
+            {/* Overlay Instructions */}
+            <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3 text-sm text-white/80">
+              <p>🖱️ Drag to rotate • Scroll to zoom</p>
+              <p>⌨️ Ctrl+Enter to generate</p>
+            </div>
           </div>
 
           {/* Controls Panel */}
@@ -182,10 +183,6 @@ const HomePage = () => {
               setRotationSpeed={setRotationSpeed}
               materialType={materialType}
               setMaterialType={setMaterialType}
-              autoRotate={autoRotate}
-              setAutoRotate={setAutoRotate}
-              showLogo={showLogo}
-              setShowLogo={setShowLogo}
             />
           </div>
         </div>

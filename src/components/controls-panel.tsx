@@ -7,7 +7,6 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { themes, Theme } from '@/components/3d-code-visualization'
-import { Settings2 } from 'lucide-react'
 
 interface ControlsPanelProps {
   prompt: string
@@ -28,10 +27,6 @@ interface ControlsPanelProps {
   setRotationSpeed: (speed: number) => void
   materialType: 'glass' | 'reflective' | 'matte' | 'glowing' | 'crystal' | 'metallic'
   setMaterialType: (type: 'glass' | 'reflective' | 'matte' | 'glowing' | 'crystal' | 'metallic') => void
-  autoRotate: boolean
-  setAutoRotate: (value: boolean) => void
-  showLogo: boolean
-  setShowLogo: (value: boolean) => void
 }
 
 export const ControlsPanel: React.FC<ControlsPanelProps> = ({
@@ -48,11 +43,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   rotationSpeed,
   setRotationSpeed,
   materialType,
-  setMaterialType,
-  autoRotate,
-  setAutoRotate,
-  showLogo,
-  setShowLogo
+  setMaterialType
 }) => {
   const handleEffectToggle = (effect: keyof typeof effects) => {
     setEffects({
@@ -60,8 +51,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
       [effect]: !effects[effect]
     })
   }
-
-  const [showAdvanced, setShowAdvanced] = React.useState(false)
 
   const materialOptions = [
     { value: 'glass', label: 'Glass', color: 'rgba(100, 200, 255, 0.3)' },
@@ -73,16 +62,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   ]
 
   return (
-    <div className="relative w-full max-w-md space-y-4 p-4 bg-black/20 backdrop-blur-sm rounded-lg border border-white/10">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-2 right-2"
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        aria-label="Toggle advanced settings"
-      >
-        <Settings2 className="h-4 w-4" />
-      </Button>
+    <div className="w-full max-w-md space-y-4 p-4 bg-black/20 backdrop-blur-sm rounded-lg border border-white/10">
       {/* Prompt Input */}
       <Card className="bg-black/30 border-white/10">
         <CardHeader>
@@ -227,52 +207,33 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         </CardContent>
       </Card>
 
-      {showAdvanced && (
-        <>
-          <Card className="bg-black/30 border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Rotation Speed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setRotationSpeed(Math.max(0, rotationSpeed - 0.5))}
-                >
-                  -
-                </Button>
-                <Badge variant="secondary" className="flex-1 text-center">
-                  {rotationSpeed}x
-                </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setRotationSpeed(Math.min(3, rotationSpeed + 0.5))}
-                >
-                  +
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-black/30 border-white/10">
-            <CardHeader>
-              <CardTitle className="text-white">Advanced Options</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="autorotate" className="text-white/80">Auto Rotate</Label>
-                <Switch id="autorotate" checked={autoRotate} onCheckedChange={() => setAutoRotate(!autoRotate)} />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showlogo" className="text-white/80">Show Background Logo</Label>
-                <Switch id="showlogo" checked={showLogo} onCheckedChange={() => setShowLogo(!showLogo)} />
-              </div>
-            </CardContent>
-          </Card>
-        </>
-      )}
+      {/* Rotation Speed */}
+      <Card className="bg-black/30 border-white/10">
+        <CardHeader>
+          <CardTitle className="text-white">Rotation Speed</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRotationSpeed(Math.max(0, rotationSpeed - 0.5))}
+            >
+              -
+            </Button>
+            <Badge variant="secondary" className="flex-1 text-center">
+              {rotationSpeed}x
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRotationSpeed(Math.min(3, rotationSpeed + 0.5))}
+            >
+              +
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
